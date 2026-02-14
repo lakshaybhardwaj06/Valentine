@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Aniha ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Great+Vibes&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            height: 100vh; 
+            background: radial-gradient(circle at bottom, #0d1b2a, #000814 70%); 
+            overflow: hidden; 
+            font-family: 'Poppins', sans-serif; 
+            color: white; 
+            touch-action: none; 
+        }
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        /* Intro Splash Screen */
+        #intro { position: fixed; inset: 0; background: black; display: flex; justify-content: center; align-items: center; z-index: 50; animation: fadeOut 2s ease 3s forwards; }
+        #intro h1 { font-family: 'Great Vibes', cursive; font-size: clamp(30px, 8vw, 60px); letter-spacing: 8px; text-transform: uppercase; opacity: 0; animation: fadeIn 2s ease forwards; }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+        /* Main Proposal Card */
+        .container { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; z-index: 2; padding: 20px; }
+        .card { 
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(20px); 
+            padding: clamp(20px, 5vw, 50px); 
+            border-radius: 30px; 
+            text-align: center; 
+            width: 100%; 
+            max-width: 500px; 
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.1); 
+            transition: 0.8s; 
+        }
+
+        h1 { font-family: 'Great Vibes', cursive; font-size: clamp(32px, 6vw, 48px); margin-bottom: 20px; }
+        #typingContainer { min-height: 60px; margin-bottom: 20px; }
+        #typingText { font-size: clamp(16px, 4vw, 20px); }
+        #cursor { font-size: 20px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 50%, 100% { opacity: 1 } 25%, 75% { opacity: 0 } }
+
+        .btn-wrap { position: relative; height: 120px; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+        button { padding: 12px 28px; font-size: 16px; border-radius: 25px; border: none; cursor: pointer; font-weight: 500; transition: 0.3s; z-index: 10; }
+        #yesBtn { background: linear-gradient(45deg, #ff4d6d, #ff8fa3); color: white; box-shadow: 0 0 15px rgba(255, 105, 135, 0.6); }
+        #noBtn { background: white; color: #ff4d6d; position: absolute; transition: 0.2s ease; }
+
+        /* The Baby Pink Gallery Screen */
+        #gallery { 
+            position: fixed; 
+            inset: 0; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(135deg, #fff0f3 0%, #ffc1cc 100%); 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: 2s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 30; 
+            padding: 20px; 
+            overflow-y: auto;
+        }
+        #gallery.show { opacity: 1; visibility: visible; }
+        
+        #gallery h2 {
+            font-family: 'Great Vibes', cursive;
+            color: #ff4d6d;
+            font-size: clamp(30px, 7vw, 50px);
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: 1s 0.5s forwards;
+        }
+        #gallery.show h2 { opacity: 1; transform: translateY(0); }
+
+        .letter-btn {
+            background: #ff4d6d;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
+            opacity: 0;
+            animation: fadeIn 1s 5s forwards; /* Appears after images */
+        }
+
+        .photo-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1000px;
+        }
+
+        #gallery img { 
+            width: clamp(140px, 30vw, 220px); 
+            height: clamp(180px, 40vw, 280px); 
+            object-fit: cover; 
+            border-radius: 15px; 
+            border: 8px solid white;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.25);
+            cursor: zoom-in; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            opacity: 0; 
+            transform: scale(0.5) translateY(100px);
+        }
+        
+        #gallery.show img { animation: slideInOneByOne 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        #gallery.show img:nth-child(1) { animation-delay: 1.0s; }
+        #gallery.show img:nth-child(2) { animation-delay: 2.5s; }
+        #gallery.show img:nth-child(3) { animation-delay: 4.0s; }
+
+        @keyframes slideInOneByOne {
+            to { opacity: 1; transform: scale(1) translateY(0) rotate(var(--rot)); }
+        }
+
+        #gallery img:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 10; }
+
+        /* Love Letter Overlay */
+        #letterOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .letter-content {
+            background: #fdfaf1; /* Parchment color */
+            width: 100%;
+            max-width: 450px;
+            max-height: 80vh;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 100px rgba(210,180,140,0.2);
+            color: #443;
+            overflow-y: auto;
+            position: relative;
+            font-family: 'Dancing Script', cursive;
+            line-height: 1.6;
+            font-size: 20px;
+            border: 1px solid #d2b48c;
+        }
+
+        .letter-content h3 { font-size: 32px; margin-bottom: 20px; color: #ff4d6d; }
+        .close-letter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4d6d;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        /* Emoji Particle Styles */
+        .floating-emoji {
+            position: fixed;
+            pointer-events: none;
+            z-index: 200;
+            font-size: 30px;
+            animation: emoji-float 1.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes emoji-float {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        /* Lightbox */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 110; display: none; justify-content: center; align-items: center; cursor: zoom-out; }
+        #lightbox img { max-width: 90%; max-height: 85%; border-radius: 12px; border: 6px solid white; }
+
+    </style>
+</head>
+<body>
+
+<canvas id="sky"></canvas>
+
+<div id="intro">
+    <h1>F O R &nbsp;&nbsp; A N I H A ❤️</h1>
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="/Users/apple/Downloads/JVKE_-_her_(mp3.pm).mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+    <div class="card" id="textCard">
+        <h1>HEY &nbsp; &nbsp; SWEETUU✨</h1>
+        <div id="typingContainer"><span id="typingText"></span><span id="cursor">|</span></div>
+        <h2 style="font-weight: 300; font-size: 1.1rem; color: #ff8fa3;">Will you be my Valentine under this sky? 🌙</h2>
+        <div class="btn-wrap">
+            <button id="yesBtn">Yes 😍</button>
+            <button id="noBtn">No 😜</button>
+        </div>
+    </div>
+</div>
+
+<div id="gallery">
+    <h2>ONLY You... ✨</h2>
+    <button class="letter-btn" onclick="showLetter()">💌 Read My Letter</button>
+    <div class="photo-grid">
+        <img src="/Users/apple/Downloads/Image1.jpg" style="--rot: -4deg" onclick="openLightbox(this.src)">
+        <img src="/Users/apple/Downloads/32D0BC7A-D4B5-4137-B86E-AB74F58A655C.jpg" style="--rot: 2deg" onclick="openLightbox(this.src)">
+        <img src="/Users/apple/Downloads/a914d4cb-bb51-4022-a44d-f223c7ceac29.JPG" style="--rot: -3deg" onclick="openLightbox(this.src)">
+    </div>
+</div>
+
+<!-- New Letter Overlay -->
+<div id="letterOverlay">
+    <div class="letter-content">
+        <div class="close-letter" onclick="hideLetter()">X</div>
+        <h3>My Dearest Aniha,</h3>
+        <p>
+            I wanted to take a moment to tell you how much you mean to me. In this vast sky full of billions of stars, you are the only one that truly illuminates my world.
+        </p><br>
+        <p>
+            Every moment with you feels like a beautiful dream, and I never want to wake up. You have a way of making everything brighter just by being yourself.
+        </p><br>
+        <p>
+            Thank you for being my constant, my joy, and my everything. I can't wait to create more memories with you.
+        </p><br>
+        <p>Yours Forever,</p>
+        <p style="font-size: 28px; margin-top: 10px;">[Your Name]</p>
+    </div>
+</div>
+
+<div id="lightbox" onclick="this.style.display='none'">
+    <img src="" id="lightboxImg">
+</div>
+
+<script>
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let meteors = [];
+    let heartActive = false;
+    let mouseX = 0, mouseY = 0;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) / 70;
+        mouseY = (e.clientY - window.innerHeight / 2) / 70;
+    });
+
+    for (let i = 0; i < 200; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.5,
+            a: Math.random(),
+            p: Math.random() * 0.7 
+        });
+    }
+
+    class Meteor {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = -100;
+            this.len = Math.random() * 100 + 100;
+            this.speed = Math.random() * 12 + 8;
+            this.alpha = 1;
+        }
+        update() {
+            this.x += this.speed;
+            this.y += this.speed;
+            this.alpha -= 0.012;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x - this.len, this.y - this.len);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha})`;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+    }
+
+    function drawHeart() {
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2.5;
+        const time = Date.now() * 0.005;
+        const pulse = 1 + Math.sin(time * 1.5) * 0.15; 
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(pulse, pulse);
+        ctx.beginPath();
+        for (let t = 0; t <= Math.PI * 2; t += 0.01) {
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            ctx.lineTo(x * 7, y * 7); 
+        }
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 120);
+        grad.addColorStop(0, '#ff4d6d');
+        grad.addColorStop(1, 'rgba(255, 26, 117, 0)');
+        ctx.fillStyle = grad;
+        ctx.shadowBlur = 60;
+        ctx.shadowColor = "#ff4d6d";
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+            let px = s.x + (mouseX * s.p);
+            let py = s.y + (mouseY * s.p);
+            ctx.beginPath();
+            ctx.arc(px, py, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${s.a})`;
+            ctx.fill();
+            s.a += (Math.random() - 0.5) * 0.04;
+            s.a = Math.max(0.1, Math.min(1, s.a));
+        });
+        meteors.forEach((m, i) => {
+            m.update();
+            m.draw();
+            if (m.alpha <= 0) meteors.splice(i, 1);
+        });
+        if (heartActive) drawHeart();
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    const text = "In a sky full of stars, I found the brightest one — YOU.";
+    const typing = document.getElementById('typingText');
+    let tIndex = 0;
+    function type() {
+        if (tIndex < text.length) {
+            typing.innerHTML += text[tIndex++];
+            setTimeout(type, 55);
+        } else {
+            document.getElementById('cursor').style.display = 'none';
+        }
+    }
+    setTimeout(type, 4500); 
+
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const music = document.getElementById('bgMusic');
+    const textCard = document.getElementById('textCard');
+    const gallery = document.getElementById('gallery');
+
+    noBtn.addEventListener('mouseover', moveNo);
+    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+
+    function moveNo() {
+        const x = Math.random() * (window.innerWidth - 120);
+        const y = Math.random() * (window.innerHeight - 60);
+        noBtn.style.position = 'fixed';
+        noBtn.style.left = x + 'px';
+        noBtn.style.top = y + 'px';
+    }
+
+    yesBtn.addEventListener('click', () => {
+        // Joy emojis burst
+        spawnEmojis(['😊', '🥰', '✨', '💖', '🎉', '🤩', '😻'], 30);
+
+        music.volume = 0;
+        music.play();
+        let fadeIn = setInterval(() => { if(music.volume < 0.6) music.volume += 0.05; else clearInterval(fadeIn); }, 100);
+        textCard.style.opacity = '0';
+        setTimeout(() => textCard.style.display = 'none', 800);
+        const mInterval = setInterval(() => {
+            for(let i=0; i<2; i++) meteors.push(new Meteor());
+        }, 120);
+        setTimeout(() => {
+            clearInterval(mInterval);
+            setTimeout(() => {
+                heartActive = true;
+                setTimeout(() => {
+                    heartActive = false;
+                    gallery.classList.add('show');
+                }, 5000); 
+            }, 1000); 
+        }, 3500);
+    });
+
+    function openLightbox(src) {
+        const lb = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightboxImg');
+        lbImg.src = src;
+        lb.style.display = 'flex';
+    }
+
+    // Letter Functions
+    function showLetter() {
+        // Bouquet emojis burst
+        spawnEmojis(['💐', '🌸', '🌷', '🌹', '🌻', '🌺', '🌼'], 25);
+        document.getElementById('letterOverlay').style.display = 'flex';
+    }
+
+    function hideLetter() {
+        spawnEmojis(['💋', '❤️'], 15);
+        setTimeout(() => {
+            document.getElementById('letterOverlay').style.display = 'none';
+        }, 200);
+    }
+
+    function spawnEmojis(emojis, count) {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'floating-emoji';
+            particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            const tx = (Math.random() - 0.5) * 500;
+            const ty = (Math.random() - 0.5) * 500;
+            const rot = (Math.random() - 0.5) * 120;
+
+            particle.style.left = centerX + 'px';
+            particle.style.top = centerY + 'px';
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            particle.style.setProperty('--rot', rot + 'deg');
+
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1500);
+        }
+    }
+</script>
+</body>
+</html>
